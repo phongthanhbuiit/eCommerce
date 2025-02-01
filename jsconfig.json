@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES6", // Chọn phiên bản ECMAScript mục tiêu là ES6
+    "module": "commonjs", // Sử dụng CommonJS module (thường dùng trong Node.js)
+    "allowJs": true, // Cho phép biên dịch các tệp .js
+    "checkJs": false, // Tắt kiểm tra cú pháp JavaScript nếu không cần
+    "noEmit": true, // Không tạo ra các tệp đầu ra trong quá trình biên dịch
+    "esModuleInterop": true, // Cho phép import từ các module CommonJS
+    "skipLibCheck": true, // Bỏ qua kiểm tra các thư viện, giúp tối ưu tốc độ biên dịch
+    "forceConsistentCasingInFileNames": true // Kiểm tra tính nhất quán trong tên tệp
+  },
+  "include": [
+    "src/**/*.js", // Bao gồm các tệp .js trong thư mục src
+    "app.js", // Bao gồm tệp app.js nếu là điểm khởi đầu
+    "server.js" // Bao gồm tệp server.js nếu là điểm khởi đầu
+  ],
+  "exclude": [
+    "node_modules", // Loại trừ thư mục node_modules
+    "dist", // Loại trừ thư mục build/dist (nếu có)
+    "build"
+  ]
+}

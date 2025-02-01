@@ -1,0 +1,15 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "eslint.enable": false,
+  "javascript.validate.enable": true,
+  "typescript.validate.enable": false,
+  // Set the default
+  "editor.formatOnSave": true,
+  // Enable per-language
+  "[javascript]": {
+    "editor.formatOnSave": true
+  }
+}
