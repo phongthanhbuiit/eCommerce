@@ -2,7 +2,7 @@
 
 const shopModel = require('../models/shop.model');
 const bycrypt = require('bcrypt');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const { createKeyToken } = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utills');
@@ -35,32 +35,20 @@ class AccessService {
       });
 
       if (newShop) {
-        // created privateKey, publicKey
-        const { privateKey, publicKey } = await crypto.generateKeyPairSync(
-          'rsa',
-          {
-            modulusLength: 4096,
-            publicKeyEncoding: {
-              type: 'pkcs1', // Public Key CryptoGraphy Standards
-              format: 'pem',
-            },
-            privateKeyEncoding: {
-              type: 'pkcs1', // Public Key CryptoGraphy Standards
-              format: 'pem',
-            },
-          }
-        );
+        const privateKey = crypto.randomBytes(64).toString('hex');
+        const publicKey = crypto.randomBytes(64).toString('hex');
 
         // save collection
-        const publicKeyString = await createKeyToken({
+        const keyStore = await createKeyToken({
           userId: newShop._id,
+          privateKey,
           publicKey,
         });
 
-        if (!publicKeyString) {
+        if (!keyStore) {
           return {
             code: '-2012',
-            message: 'public key string error',
+            message: 'keyStore  error',
           };
         }
 
@@ -70,16 +58,17 @@ class AccessService {
             userId: newShop._id,
             email: email,
           },
-          publicKeyString,
+          publicKey,
           privateKey
         );
 
+        console.log({ newShop });
         return {
           code: 201,
           medata: {
             shop: getInfoData({
               fields: ['_id', 'name', 'email'],
-              data: newShop,
+              object: newShop,
             }),
             tokens: tokenPair,
           },
