@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-const express = require("express");
+const express = require('express');
+const { apiKey, permissions } = require('../auth/checkAuth');
 const router = express.Router();
 
-// router.get("/", (req, res, next) => {
-//   return res.status(200).json({
-//     message: "Welcome to eCommerce",
-//   });
-// });
+// check apiKey
+router.use(apiKey);
+// check permission
+router.use(permissions('0000'));
 
-router.use("/v1/api", require("./access"));
+router.use('/v1/api', require('./access'));
 
 module.exports = router;
