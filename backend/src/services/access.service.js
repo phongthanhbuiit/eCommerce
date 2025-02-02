@@ -59,11 +59,9 @@ class AccessService {
         publicKey,
         privateKey
       );
-
-      console.log({ newShop });
       return {
         code: 201,
-        medata: {
+        metadata: {
           shop: getInfoData({
             fields: ['_id', 'name', 'email'],
             object: newShop,
