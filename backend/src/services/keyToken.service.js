@@ -1,7 +1,7 @@
 'use strict';
 
 const keytokenModel = require('../models/keytoken.model');
-const { filter } = require('lodash');
+const { Types } = require('mongoose');
 
 class KeyTokenService {
   static createKeyToken = async ({
@@ -39,6 +39,15 @@ class KeyTokenService {
     } catch (error) {
       return error;
     }
+  };
+
+  static findByUserId = async (userId) => {
+    return keytokenModel.findOne({ user: userId }).lean();
+  };
+
+  static removeByUserId = async (userId) => {
+    console.log({ userId });
+    return keytokenModel.deleteOne({ user: userId }).lean();
   };
 }
 
