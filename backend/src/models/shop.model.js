@@ -8,21 +8,21 @@ const COLLECTION_NAME = 'Shops';
 const shopSchema = new Schema(
   {
     name: {
-      type: String,
+      type: Schema.Types.String,
       trim: true,
       maxLength: 150,
     },
     email: {
-      type: String,
+      type: Schema.Types.String,
       trim: true,
       unique: true,
     },
     password: {
-      type: String,
+      type: Schema.Types.String,
       required: true,
     },
     status: {
-      type: String,
+      type: Schema.Types.String,
       enum: ['active', 'inactive'],
       default: 'inactive',
     },

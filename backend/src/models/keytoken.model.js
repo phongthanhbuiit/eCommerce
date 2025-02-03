@@ -13,16 +13,20 @@ const keyTokenSchema = new Schema(
       ref: 'Shop',
     },
     privateKey: {
-      type: String,
+      type: Schema.Types.String,
       required: true,
     },
     publicKey: {
-      type: String,
+      type: Schema.Types.String,
       required: true,
     },
-    refreshToken: {
-      type: Array,
+    refreshTokensUsed: {
+      type: Schema.Types.Array,
       default: [],
+    },
+    refreshTokens: {
+      type: Schema.Types.String,
+      required: true,
     },
   },
   {

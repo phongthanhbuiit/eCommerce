@@ -6,7 +6,9 @@ const crypto = require('node:crypto');
 const { createKeyToken } = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utills');
-const { BadRequestError } = require('../core/error.response');
+const { BadRequestError, AuthFailureError } = require('../core/error.response');
+const { findByEmail } = require('./shop.service');
+const KeyTokenService = require('./keyToken.service');
 
 const RoleShop = {
   SHOP: 'SHOP',
@@ -16,6 +18,58 @@ const RoleShop = {
 };
 
 class AccessService {
+  /*
+                               B1: check email in dbs
+                               B2: match password
+                               B3: create AT vs RT and save
+                               B4: generate tokens
+                               B5: get data and return login
+                          */
+  static login = async ({ email, password, refreshToken = null }) => {
+    //B1
+    const foundShop = await findByEmail({ email });
+
+    if (!foundShop) {
+      throw new BadRequestError('Error: Shop not found');
+    }
+
+    //B2
+    const match = await bycrypt.compareSync(password, foundShop.password);
+    if (!match) {
+      throw new AuthFailureError('Authentication error');
+    }
+
+    //B3
+    const privateKey = crypto.randomBytes(64).toString('hex');
+    const publicKey = crypto.randomBytes(64).toString('hex');
+
+    //B4 generate token
+    const tokens = await createTokenPair(
+      {
+        userId: foundShop._id,
+        email: email,
+      },
+      publicKey,
+      privateKey
+    );
+    const { _id: userId } = foundShop;
+    await KeyTokenService.createKeyToken({
+      userId,
+      privateKey,
+      publicKey,
+      refreshToken: tokens.refreshToken,
+    });
+
+    //B5
+    return {
+      shop: getInfoData({
+        fields: ['_id', 'name', 'email'],
+        object: foundShop,
+      }),
+      tokens,
+    };
+  };
+
   static signUp = async ({ name, email, password }) => {
     // step1: check email exits?
     const holderShop = await shopModel.findOne({ email }).lean();
@@ -60,14 +114,11 @@ class AccessService {
         privateKey
       );
       return {
-        code: 201,
-        metadata: {
-          shop: getInfoData({
-            fields: ['_id', 'name', 'email'],
-            object: newShop,
-          }),
-          tokens: tokenPair,
-        },
+        shop: getInfoData({
+          fields: ['_id', 'name', 'email'],
+          object: newShop,
+        }),
+        tokens: tokenPair,
       };
     } // end new shop
 

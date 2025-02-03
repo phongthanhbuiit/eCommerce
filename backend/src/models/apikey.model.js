@@ -8,16 +8,16 @@ const COLLECTION_NAME = 'ApiKeys';
 const apiKeySchema = new Schema(
   {
     key: {
-      type: String,
+      type: Schema.Types.String,
       trim: true,
       required: true,
     },
     status: {
-      type: Boolean,
+      type: Schema.Types.Boolean,
       default: true,
     },
     permissions: {
-      type: [String],
+      type: [Schema.Types.String],
       required: true,
       enum: ['0000', '1111', '2222'],
     },
