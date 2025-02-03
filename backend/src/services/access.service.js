@@ -18,13 +18,18 @@ const RoleShop = {
 };
 
 class AccessService {
+  static logout = async (keyStore) => {
+    const delKey = await KeyTokenService.removeByUserId(keyStore.user);
+    return delKey;
+  };
+
   /*
-                               B1: check email in dbs
-                               B2: match password
-                               B3: create AT vs RT and save
-                               B4: generate tokens
-                               B5: get data and return login
-                          */
+                   B1: check email in dbs
+                   B2: match password
+                   B3: create AT vs RT and save
+                   B4: generate tokens
+                   B5: get data and return login
+                */
   static login = async ({ email, password, refreshToken = null }) => {
     //B1
     const foundShop = await findByEmail({ email });
