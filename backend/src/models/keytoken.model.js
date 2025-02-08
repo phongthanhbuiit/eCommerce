@@ -24,7 +24,7 @@ const keyTokenSchema = new Schema(
       type: Schema.Types.Array,
       default: [],
     },
-    refreshTokens: {
+    refreshToken: {
       type: Schema.Types.String,
       required: true,
     },
