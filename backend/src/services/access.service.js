@@ -32,30 +32,25 @@ class AccessService {
   4- create new access token and new refresh token
   5- update access token, refresh token and refresh token used
    */
-  static handleRefreshToken = async (refreshToken) => {
-    const foundToken =
-      await KeyTokenService.findByRefreshTokenUsed(refreshToken);
+  static handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
+    const { userId, email } = user;
 
-    if (foundToken) {
-      const { userId, email } = verifyJWT(foundToken, foundToken.privateKey);
+    if (keyStore.refreshTokensUsed.includes(refreshToken)) {
       await KeyTokenService.deleteByUserId(userId);
       throw new ForbiddenError('Something went wrong!! Please login again');
     }
 
-    const holderToken = await KeyTokenService.findByRefreshToken(refreshToken);
-    if (!holderToken) throw new AuthFailureError('Shop not registered');
-    const { userId, email } = await verifyJWT(
-      refreshToken,
-      holderToken.privateKey
-    );
+    if (keyStore.refreshToken !== refreshToken) {
+      throw new AuthFailureError('Shop not registered');
+    }
 
     const foundShop = await findByEmail({ email });
     if (!foundShop) throw new AuthFailureError('Shop not registered');
 
     const tokens = await createTokenPair(
       { userId, email },
-      holderToken.publicKey,
-      holderToken.privateKey
+      keyStore.publicKey,
+      keyStore.privateKey
     );
 
     await KeyTokenService.updateNewRefreshToken({
@@ -64,7 +59,7 @@ class AccessService {
     });
 
     return {
-      user: { userId, email },
+      user,
       tokens,
     };
   };

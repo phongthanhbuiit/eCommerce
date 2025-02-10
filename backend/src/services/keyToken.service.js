@@ -27,7 +27,6 @@ class KeyTokenService {
         refreshTokenUsed: [],
         refreshToken,
       };
-      console.log({ refreshToken });
       const options = { upsert: true, new: true };
       const tokens = await keytokenModel.findOneAndUpdate(
         filter,
