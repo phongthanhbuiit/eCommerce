@@ -58,8 +58,25 @@ const electronicSchema = new Schema(
   }
 );
 
+const FURNITURE_DOCUMENT_NAME = 'Furniture';
+const FURNITURE_COLLECTION_NAME = 'Furnitures';
+
+// define the product type = furniture
+const furnitureSchema = new Schema(
+  {
+    manufacturer: { type: Schema.Types.String, required: true },
+    model: { type: Schema.Types.String, required: true },
+    color: { type: Schema.Types.String, required: true },
+  },
+  {
+    collection: FURNITURE_COLLECTION_NAME,
+    timestamps: true,
+  }
+);
+
 module.exports = {
   product: model(PRODUCT_DOCUMENT_NAME, productSchema),
   clothing: model(CLOTHING_DOCUMENT_NAME, clothingSchema),
   electronic: model(ELECTRONIC_DOCUMENT_NAME, electronicSchema),
+  furniture: model(FURNITURE_DOCUMENT_NAME, furnitureSchema),
 };
