@@ -1,6 +1,7 @@
 'use strict';
 
 const { model, Schema } = require('mongoose');
+const slugify = require('slugify');
 
 const PRODUCT_DOCUMENT_NAME = 'Product';
 const PRODUCT_COLLECTION_NAME = 'Products';
@@ -10,6 +11,7 @@ const productSchema = new Schema(
     product_name: { type: Schema.Types.String, required: true },
     product_thumb: Schema.Types.String,
     product_description: { type: Schema.Types.String, required: true },
+    product_slug: { type: Schema.Types.String },
     product_price: { type: Schema.Types.Number, required: true },
     product_quantity: { type: Schema.Types.Number, required: true },
     product_type: {
@@ -17,8 +19,28 @@ const productSchema = new Schema(
       required: true,
       enum: ['Electronics', 'Clothing', 'Furniture'],
     },
-    product_shop: Schema.Types.String,
+    product_shop: { type: Schema.Types.ObjectId, ref: 'Shop' },
     product_attributes: [{ type: Schema.Types.Mixed, required: true }],
+    product_ratingAverage: {
+      type: Schema.Types.Number,
+      default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10,
+    },
+    product_variations: { type: Schema.Types.Array, default: [] },
+    isDraft: {
+      type: Schema.Types.Boolean,
+      default: true,
+      index: true,
+      select: false,
+    },
+    isPublished: {
+      type: Schema.Types.Boolean,
+      default: false,
+      index: true,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -26,10 +48,19 @@ const productSchema = new Schema(
   }
 );
 
+// create index for search
+productSchema.index({ product_name: 'text', product_description: 'text' });
+
+// Document middleware: run before .save() and .create()
+productSchema.pre('save', function (next) {
+  this.product_slug = slugify(this.product_name, { lower: true });
+  next();
+});
+
+// define the product type = clothing
 const CLOTHING_DOCUMENT_NAME = 'Clothing';
 const CLOTHING_COLLECTION_NAME = 'Clothes';
 
-// define the product type = clothing
 const clothingSchema = new Schema(
   {
     brand: { type: Schema.Types.String, required: true },
