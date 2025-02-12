@@ -7,6 +7,8 @@ const {
   furniture,
 } = require('../product.model');
 const { NotFoundError } = require('../../core/error.response');
+const { getSelectData, getUnSelectData } = require('../../utills/index');
+const { query } = require('express');
 
 const findAllDraftForShop = async ({ query, limit, skip }) => {
   return await queryProduct(query, limit, skip);
@@ -14,6 +16,30 @@ const findAllDraftForShop = async ({ query, limit, skip }) => {
 
 const findAllPublishedForShop = async ({ query, limit, skip }) => {
   return await queryProduct(query, limit, skip);
+};
+
+const findAllProducts = async ({
+  limit = 50,
+  sort = 'ctime',
+  page = 1,
+  filter = { isPublished: true },
+  select,
+}) => {
+  const skip = limit * (page - 1);
+  const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 };
+  const products = await product
+    .find(filter)
+    .sort(sortBy)
+    .skip(skip)
+    .limit(limit)
+    .select(getSelectData(select))
+    .lean(0);
+
+  return products;
+};
+
+const findProduct = async ({ product_id, unSelect }) => {
+  return await product.findById(product_id).select(getUnSelectData(unSelect));
 };
 
 const searchProductByUser = async ({ keySearch }) => {
@@ -75,4 +101,6 @@ module.exports = {
   publicProductByShop,
   unPublicProductByShop,
   searchProductByUser,
+  findAllProducts,
+  findProduct,
 };

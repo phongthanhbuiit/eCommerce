@@ -11,6 +11,8 @@ router.get(
   '/search/:keySearch',
   asyncHandler(ProductController.getListSearchProduct)
 );
+router.get('', asyncHandler(ProductController.getListAllProducts));
+router.get('/:product_id', asyncHandler(ProductController.findProductById));
 
 // authentication
 router.use(authenticate);

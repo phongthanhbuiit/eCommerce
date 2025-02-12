@@ -4,8 +4,6 @@ const ProductService = require('../services/product.service.xxx');
 const { SuccessResponse } = require('../core/success.response');
 
 class ProductController {
-  getListSearchProduct;
-
   createProduct = async (req, res, next) => {
     new SuccessResponse({
       message: 'Create Product success',
@@ -57,8 +55,22 @@ class ProductController {
 
   getListSearchProduct = async (req, res, next) => {
     new SuccessResponse({
-      message: 'Get list published success!',
+      message: 'Get list search success!',
       metadata: await ProductService.getListSearchProduct(req.params),
+    }).send(res);
+  };
+
+  getListAllProducts = async (req, res, next) => {
+    new SuccessResponse({
+      message: 'Get list all Products success!',
+      metadata: await ProductService.findAllProducts(req.params),
+    }).send(res);
+  };
+
+  findProductById = async (req, res, next) => {
+    new SuccessResponse({
+      message: 'Find  Products success!',
+      metadata: await ProductService.findProductById(req.params.product_id),
     }).send(res);
   };
 
