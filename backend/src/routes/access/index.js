@@ -20,6 +20,4 @@ router.post(
   asyncHandler(accessController.handlerRefreshToken)
 );
 
-router.post('/product', asyncHandler(productController.createProduct));
-
 module.exports = router;

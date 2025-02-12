@@ -42,4 +42,4 @@ const shopSchema = new Schema(
 );
 
 //Export the model
-module.exports = model(COLLECTION_NAME, shopSchema);
+module.exports = model(DOCUMENT_NAME, shopSchema);

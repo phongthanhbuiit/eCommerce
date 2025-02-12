@@ -2,6 +2,13 @@
 
 const { product, clothing, electronic } = require('../models/product.model');
 const { BadRequestError } = require('../core/error.response');
+const {
+  findAllDraftForShop,
+  publicProductByShop,
+  findAllPublishedForShop,
+  unPublicProductByShop,
+  searchProductByUser,
+} = require('../models/repositories/product.repo');
 
 // define Factory class to create product
 class ProductFactory {
@@ -21,6 +28,47 @@ class ProductFactory {
       throw new BadRequestError(`Invalid product type ${type}`);
 
     return new productClass(payload).createProduct();
+  }
+
+  static async publicProductByShop({ product_shop, product_id }) {
+    return await publicProductByShop({ product_shop, product_id });
+  }
+
+  static async unPublicProductByShop({ product_shop, product_id }) {
+    return await unPublicProductByShop({ product_shop, product_id });
+  }
+
+  // query //
+  /**
+   * Retrieves all draft products for a specific shop.
+   *
+   * @param {Object} params - Input parameters.
+   * @param {string} params.product_shop - The ID of the shop to fetch draft products from.
+   * @param {number} [params.limit=50] - The maximum number of products to retrieve (default: 50).
+   * @param {number} [params.skip=0] - The number of products to skip for pagination (default: 0).
+   * @returns {Promise<Array>} - A list of draft products belonging to the shop.
+   */
+  static async findAllDraftForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isDraft: true };
+    return await findAllDraftForShop({ query, limit, skip });
+  }
+
+  /**
+   * Retrieves all draft products for a specific shop.
+   *
+   * @param {Object} params - Input parameters.
+   * @param {string} params.product_shop - The ID of the shop to fetch draft products from.
+   * @param {number} [params.limit=50] - The maximum number of products to retrieve (default: 50).
+   * @param {number} [params.skip=0] - The number of products to skip for pagination (default: 0).
+   * @returns {Promise<Array>} - A list of draft products belonging to the shop.
+   */
+  static async findAllPublishedForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isPublished: true };
+    return await findAllPublishedForShop({ query, limit, skip });
+  }
+
+  static async getListSearchProduct({ keySearch }) {
+    return await searchProductByUser({ keySearch });
   }
 }
 
