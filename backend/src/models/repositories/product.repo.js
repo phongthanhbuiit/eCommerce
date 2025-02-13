@@ -8,7 +8,6 @@ const {
 } = require('../product.model');
 const { NotFoundError } = require('../../core/error.response');
 const { getSelectData, getUnSelectData } = require('../../utills/index');
-const { query } = require('express');
 
 const findAllDraftForShop = async ({ query, limit, skip }) => {
   return await queryProduct(query, limit, skip);
@@ -39,7 +38,7 @@ const findAllProducts = async ({
 };
 
 const findProduct = async ({ product_id, unSelect }) => {
-  return await product.findById(product_id).select(getUnSelectData(unSelect));
+  return product.findById(product_id).select(getUnSelectData(unSelect));
 };
 
 const searchProductByUser = async ({ keySearch }) => {
@@ -95,6 +94,17 @@ const queryProduct = async (query, limit, skip) => {
     .exec();
 };
 
+const updateProductById = async ({
+  productId,
+  payload,
+  model,
+  isNew = true,
+}) => {
+  return model.findByIdAndUpdate(productId, payload, {
+    new: isNew,
+  });
+};
+
 module.exports = {
   findAllDraftForShop,
   findAllPublishedForShop,
@@ -103,4 +113,5 @@ module.exports = {
   searchProductByUser,
   findAllProducts,
   findProduct,
+  updateProductById,
 };
