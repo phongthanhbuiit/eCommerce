@@ -21,6 +21,7 @@ const {
   removeUndefinedObject,
   updateNestedObjectParser,
 } = require('../utills');
+const { insertInventory } = require('../models/repositories/inventory.repo');
 
 // define Factory class to create product
 class ProductFactory {
@@ -137,7 +138,16 @@ class Product {
 
   //create new product
   async createProduct() {
-    return await product.create(this);
+    const newProduct = await product.create(this);
+    if (newProduct) {
+      await insertInventory({
+        product: newProduct._id,
+        shopId: this.product_shop,
+        stock: this.product_quantity,
+      });
+    }
+
+    return newProduct;
   }
 
   // update product
@@ -164,7 +174,6 @@ class Clothing extends Product {
    */
   async updateProduct(productId) {
     const objectParams = removeUndefinedObject(this);
-    console.log({ objectParams, productId });
     if (objectParams.product_attributes) {
       // update child
       await updateProductById({
@@ -178,7 +187,6 @@ class Clothing extends Product {
       updateNestedObjectParser(objectParams)
     );
 
-    console.log({ updateProduct });
     return updateProduct;
   }
 }
